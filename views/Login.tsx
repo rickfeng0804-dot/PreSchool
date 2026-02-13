@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Lock } from 'lucide-react';
-import { ADMIN_PASSWORD } from '../constants';
+import { checkPassword } from '../services/storage';
 
 interface LoginProps {
   onSuccess: () => void;
@@ -12,7 +12,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
+    if (checkPassword(password)) {
       onSuccess();
     } else {
       setError(true);

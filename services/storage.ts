@@ -1,7 +1,13 @@
 import { Student, StudentFormData, Gender } from '../types';
-import { GRADES, CLASSES, CONTENT_TYPES } from '../constants';
+import { GRADES, CLASSES, CONTENT_TYPES, ADMIN_PASSWORD } from '../constants';
 
 const STORAGE_KEY = 'aischool_data_v2';
+const SETTINGS_KEY = 'aischool_settings_v1';
+
+export interface SystemSettings {
+  password?: string;
+  webAppUrl?: string;
+}
 
 const NAMES_MALE = ['小明', '大寶', '小強', '阿傑', '凱文', '小華', '小龍', '家豪', '志明', '俊傑', '子軒', '承恩', '宇翔', '冠宇', '家瑋'];
 const NAMES_FEMALE = ['小美', '小玉', '阿花', '美玲', '雅婷', '小娟', '心怡', '佳琪', '怡君', '淑芬', '子涵', '詠晴', '以柔', '雨萱', '思妤'];
@@ -89,4 +95,22 @@ export const addStudent = (data: StudentFormData): Student => {
   const updatedData = [newStudent, ...currentData];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
   return newStudent;
+};
+
+// --- Settings Management ---
+
+export const getSettings = (): SystemSettings => {
+  const stored = localStorage.getItem(SETTINGS_KEY);
+  return stored ? JSON.parse(stored) : {};
+};
+
+export const saveSettings = (settings: SystemSettings) => {
+  const current = getSettings();
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...current, ...settings }));
+};
+
+export const checkPassword = (inputPassword: string): boolean => {
+  const settings = getSettings();
+  const currentPassword = settings.password || ADMIN_PASSWORD;
+  return inputPassword === currentPassword;
 };

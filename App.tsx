@@ -4,6 +4,7 @@ import { Login } from './views/Login';
 import { Admin } from './views/Admin';
 import { Gallery } from './views/Gallery';
 import { StudentDetail } from './views/StudentDetail';
+import { SystemSettings } from './views/SystemSettings';
 import { ViewState, Student } from './types';
 
 const App: React.FC = () => {
@@ -22,7 +23,11 @@ const App: React.FC = () => {
   };
 
   const navigateHome = () => {
-    setView(ViewState.GALLERY);
+    if (isAdmin) {
+      setView(ViewState.ADMIN);
+    } else {
+      setView(ViewState.GALLERY);
+    }
     setSelectedStudent(null);
   };
 
@@ -36,6 +41,7 @@ const App: React.FC = () => {
       <Header 
         onLoginClick={() => setView(ViewState.LOGIN)}
         onHomeClick={navigateHome}
+        onSettingsClick={() => setView(ViewState.SETTINGS)}
         isAdmin={isAdmin}
         onLogout={handleLogout}
       />
@@ -49,8 +55,12 @@ const App: React.FC = () => {
           <Admin />
         )}
 
-        {/* Protect Admin route */}
-        {view === ViewState.ADMIN && !isAdmin && (
+        {view === ViewState.SETTINGS && isAdmin && (
+          <SystemSettings />
+        )}
+
+        {/* Protect Admin/Settings route */}
+        {(view === ViewState.ADMIN || view === ViewState.SETTINGS) && !isAdmin && (
            <Login onSuccess={handleLoginSuccess} />
         )}
 
