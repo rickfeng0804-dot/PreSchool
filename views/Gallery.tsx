@@ -2,10 +2,13 @@ import React, { useState, useMemo } from 'react';
 import { StudentCard } from '../components/StudentCard';
 import { getStudents } from '../services/storage';
 import { GRADES } from '../constants';
-import { Filter } from 'lucide-react';
-import { Grade } from '../types';
+import { Grade, Student } from '../types';
 
-export const Gallery: React.FC = () => {
+interface GalleryProps {
+  onStudentClick: (student: Student) => void;
+}
+
+export const Gallery: React.FC<GalleryProps> = ({ onStudentClick }) => {
   const [filterGrade, setFilterGrade] = useState<Grade | 'ALL'>('ALL');
   const students = getStudents();
 
@@ -47,7 +50,10 @@ export const Gallery: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {filteredStudents.map(student => (
             <div key={student.id} className="h-full">
-              <StudentCard student={student} />
+              <StudentCard 
+                student={student} 
+                onView={onStudentClick}
+              />
             </div>
           ))}
         </div>

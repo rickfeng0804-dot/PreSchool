@@ -3,11 +3,13 @@ import { Header } from './components/Header';
 import { Login } from './views/Login';
 import { Admin } from './views/Admin';
 import { Gallery } from './views/Gallery';
-import { ViewState } from './types';
+import { StudentDetail } from './views/StudentDetail';
+import { ViewState, Student } from './types';
 
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>(ViewState.GALLERY);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
   const handleLoginSuccess = () => {
     setIsAdmin(true);
@@ -21,6 +23,12 @@ const App: React.FC = () => {
 
   const navigateHome = () => {
     setView(ViewState.GALLERY);
+    setSelectedStudent(null);
+  };
+
+  const handleStudentClick = (student: Student) => {
+    setSelectedStudent(student);
+    setView(ViewState.STUDENT_DETAIL);
   };
 
   return (
@@ -47,7 +55,14 @@ const App: React.FC = () => {
         )}
 
         {view === ViewState.GALLERY && (
-          <Gallery />
+          <Gallery onStudentClick={handleStudentClick} />
+        )}
+
+        {view === ViewState.STUDENT_DETAIL && selectedStudent && (
+          <StudentDetail 
+            student={selectedStudent} 
+            onBack={navigateHome}
+          />
         )}
       </main>
       

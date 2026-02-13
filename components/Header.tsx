@@ -23,14 +23,14 @@ export const Header: React.FC<HeaderProps> = ({ onLoginClick, onHomeClick, isAdm
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800 tracking-tight text-shadow-sm">
               愛愛幼兒園
             </h1>
-            <span className="text-sm font-bold text-gray-400">學習歷程系統</span>
+            <span className="text-lg font-black text-pink-500 tracking-wide">學習歷程系統</span>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="hidden md:flex flex-col items-end mr-2">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">園長</span>
-            <span className="text-sm font-bold text-gray-700 bg-gray-100 px-3 py-1 rounded-full border-2 border-gray-200">
+            <span className="text-sm font-bold text-pink-400 uppercase tracking-wider mb-0.5">園長</span>
+            <span className="text-lg font-black text-pink-700 bg-pink-50 px-4 py-1 rounded-full border-2 border-pink-200 shadow-sm">
               Rachel Huang
             </span>
           </div>

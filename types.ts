@@ -31,5 +31,6 @@ export interface StudentFormData {
 export enum ViewState {
   GALLERY = 'GALLERY',
   LOGIN = 'LOGIN',
-  ADMIN = 'ADMIN'
+  ADMIN = 'ADMIN',
+  STUDENT_DETAIL = 'STUDENT_DETAIL'
 }

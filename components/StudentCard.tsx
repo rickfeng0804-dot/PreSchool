@@ -1,14 +1,18 @@
 import React from 'react';
-import { Share2, Download, FileText, Video, Image as ImageIcon, FileSpreadsheet, Presentation } from 'lucide-react';
+import { FileText, Video, Image as ImageIcon, FileSpreadsheet, Presentation, ArrowRight } from 'lucide-react';
 import { Student } from '../types';
 
 interface StudentCardProps {
   student: Student;
+  onView: (student: Student) => void;
 }
 
-export const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
+export const StudentCard: React.FC<StudentCardProps> = ({ student, onView }) => {
   const isBoy = student.gender === 'boy';
   
+  // Use 3D realistic cartoon avatars based on gender
+  const avatarUrl = `https://avatar.iran.liara.run/public/${isBoy ? 'boy' : 'girl'}?username=${student.id}`;
+
   // Dynamic color themes based on gender
   const bgClass = isBoy ? 'bg-sky-50' : 'bg-pink-50';
   const borderClass = isBoy ? 'border-sky-200' : 'border-pink-200';
@@ -23,36 +27,6 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
       case 'Excel': return <FileSpreadsheet size={20} />;
       case 'PPT': return <Presentation size={20} />;
       default: return <FileText size={20} />;
-    }
-  };
-
-  const handleDownload = () => {
-    const element = document.getElementById(`card-${student.id}`);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (element && (window as any).html2pdf) {
-      const opt = {
-        margin: 1,
-        filename: `${student.name}_學習歷程.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).html2pdf().set(opt).from(element).save();
-    } else {
-      alert("下載功能模擬：正在產生 PDF...");
-    }
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: `${student.name}的學習歷程`,
-        text: student.description,
-        url: window.location.href,
-      }).catch(console.error);
-    } else {
-      alert(`已複製分享連結：${student.name} - ${student.grade} ${student.className}`);
     }
   };
 
@@ -71,10 +45,10 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
         <div className="flex items-start gap-4 mb-4">
           <div className="relative">
             <img 
-              src={`https://picsum.photos/seed/${student.id}/150/150`} 
+              src={avatarUrl} 
               alt={student.name} 
               loading="lazy"
-              className={`w-20 h-20 rounded-full border-4 ${isBoy ? 'border-sky-300' : 'border-pink-300'} shadow-md object-cover`}
+              className={`w-20 h-20 rounded-full border-4 ${isBoy ? 'border-sky-300' : 'border-pink-300'} shadow-md object-cover bg-white`}
             />
             <div className={`absolute -bottom-2 -right-2 ${accentClass} text-white p-1.5 rounded-full border-2 border-white shadow-sm`}>
               {getIcon(student.contentType)}
@@ -95,25 +69,19 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student }) => {
 
         {/* Description Box */}
         <div className="bg-white/60 p-4 rounded-2xl border-2 border-white mb-4 flex-grow shadow-inner">
-          <p className="text-gray-600 leading-relaxed font-medium">
+          <p className="text-gray-600 leading-relaxed font-medium line-clamp-3">
             {student.description}
           </p>
         </div>
 
         {/* Footer Actions */}
-        <div className="flex gap-3 mt-auto pt-2 no-print">
+        <div className="mt-auto pt-2">
           <button 
-            onClick={handleDownload}
-            className={`flex-1 flex items-center justify-center gap-2 ${accentClass} text-white py-2 px-4 rounded-xl font-bold border-b-4 ${accentDarkClass} active:border-b-0 active:translate-y-1 transition-all`}
+            onClick={() => onView(student)}
+            className={`w-full flex items-center justify-center gap-2 ${accentClass} text-white py-3 px-4 rounded-xl font-bold border-b-4 ${accentDarkClass} active:border-b-0 active:translate-y-1 transition-all hover:brightness-110`}
           >
-            <Download size={18} />
-            <span className="text-sm">下載 PDF</span>
-          </button>
-          <button 
-            onClick={handleShare}
-            className="flex items-center justify-center bg-yellow-400 text-yellow-900 py-2 px-4 rounded-xl font-bold border-b-4 border-yellow-600 active:border-b-0 active:translate-y-1 transition-all"
-          >
-            <Share2 size={18} />
+            <span className="text-base">進入學習歷程</span>
+            <ArrowRight size={18} />
           </button>
         </div>
       </div>
