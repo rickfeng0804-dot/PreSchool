@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Save, Server, Code, CheckCircle, RefreshCcw } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Save, Server, Code, CheckCircle, RefreshCcw, Upload } from 'lucide-react';
 import { GRADES, CLASSES, CONTENT_TYPES, MOCK_GAS_CODE } from '../constants';
 import { StudentFormData } from '../types';
 import { addStudent } from '../services/storage';
@@ -16,6 +16,7 @@ export const Admin: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,15 +35,40 @@ export const Admin: React.FC = () => {
         link: '',
         description: ''
       }));
+      
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
 
       // Hide success message after 3s
       setTimeout(() => setSuccess(false), 3000);
     }, 800);
   };
 
-  const handleNasUpload = () => {
-    console.log("Mocking NAS Upload trigger...");
-    alert("已觸發 NAS 上傳程序 (模擬)");
+  const handleFileUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Basic size check for localStorage limitations in this demo
+      if (file.size > 1024 * 1024) { // 1MB limit
+        alert("提醒：由於此為展示系統，檔案將儲存於瀏覽器暫存，建議上傳小於 1MB 的檔案。");
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setFormData(prev => ({
+            ...prev,
+            link: event.target!.result as string
+          }));
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const copyCode = () => {
@@ -146,23 +172,30 @@ export const Admin: React.FC = () => {
               </select>
             </div>
 
-            {/* Link/NAS */}
+            {/* Link/File Upload */}
             <div className="space-y-2">
-              <label className="block text-gray-700 font-bold ml-1">檔案連結 / NAS 路徑</label>
+              <label className="block text-gray-700 font-bold ml-1">檔案連結 / 檔案上傳</label>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={formData.link}
                   onChange={e => setFormData({...formData, link: e.target.value})}
-                  className="flex-1 px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-green-400 focus:outline-none font-bold"
-                  placeholder="https://..."
+                  className="flex-1 px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-green-400 focus:outline-none font-bold text-gray-600 truncate"
+                  placeholder="https://... 或點擊右側上傳"
+                />
+                <input 
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
                 />
                 <button 
                   type="button"
-                  onClick={handleNasUpload}
-                  className="bg-gray-700 text-white px-4 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors"
+                  onClick={handleFileUploadClick}
+                  className="bg-gray-700 text-white px-4 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors flex items-center gap-2 whitespace-nowrap"
                 >
-                  NAS 上傳
+                  <Upload size={18} />
+                  檔案上傳
                 </button>
               </div>
             </div>
